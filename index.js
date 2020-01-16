@@ -1,11 +1,15 @@
-/**
- * @format
- */
+const express = require('express');
+const bodyParser = require('body-parser');
+const http = require('http');
+const cors = require('cors');
+const PORT = 3000;
 
-import {AppRegistry} from 'react-native';
-import App from './App';
-import {name as appName} from './app.json';
-import TeacherRegister from './app/Components/Students/RegisterScreen';
-import Login from './app/Components/LoginScreen';
+const routes = require('./routes/appRoutes');
 
-AppRegistry.registerComponent(appName, () => Login);
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(cors());
+app.use('/',routes);
+
+http.createServer(app).listen(PORT,() => console.log('Server running on '+PORT))
