@@ -118,4 +118,104 @@ routes.post('/studentLogin',async(req,res)=>{
     });
 });
 
+routes.post('/studentCourse', async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+    const query = "SELECT cm.cid FROM student s, coursemodule cm WHERE s.courseName = cm.courseName AND s.sid='"+req.body.sid+"'";
+    conn.query(query, async function(err,result){
+        const cid = await result[0].cid;
+        res.send({cid:cid});
+    });
+});
+
+routes.post('/postDetails',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+    const query = "INSERT INTO post(name,path,sid,timeDate,cid) VALUES('"+req.body.postName+"','"+req.body.path+"','"+req.body.sid+"','"+req.body.timeDate+"','"+req.body.cid+"')";
+    conn.query(query,function(err){
+        if(err){
+            console.log(err);
+        }else{
+            console.log('Inserted');
+        }
+    });
+});
+
+routes.get('/getPostData',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+    const query = "SELECT * FROM post";
+    conn.query(query,async function(err,result){
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    });
+});
+
+routes.post('/addComments',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+
+    const query = "INSERT INTO commentonpost(comments,postid,commentby) VALUES('"+req.body.comments+"','"+req.body.commentsOn+"','"+req.body.sid+"')";
+    conn.query(query,function(e){
+        if(e) res.send({msg:'falied'});
+    })
+});
+
+routes.post('/getComments',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+
+    const query = "SELECT comments FROM commentonpost WHERE postid="+req.body.pid;
+    conn.query(query,async function(err,result){
+        if(err) console.log(err)
+        else
+        res.send(result)
+    })
+});
+
+routes.post('/sendQuestion',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+
+    const query = "INSERT INTO question(question,senderId) VALUES('"+req.body.question+"','"+req.body.sid+"')";
+    conn.query(query,function(err){
+        if(err) console.log(err)
+    });
+});
+
+routes.post('/getQuestion',async(req,res)=>{
+    if(!conn){
+        conn.connect(function(err){
+            if(err) console.log(err);
+        });
+    }
+    const query = "SELECT question FROM question WHERE senderId="+req.body.sid;
+    conn.query(query,async function(err, result){
+        if(err) console.log(err)
+        else
+        res.send(result)
+    });
+});
+
 module.exports = routes;
